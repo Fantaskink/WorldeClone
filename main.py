@@ -18,7 +18,7 @@ def main():
     guess = ""
     number_of_guesses = 0
 
-    while guess != solution:
+    while guess != solution and number_of_guesses < 6:
         guess = prompt_player_word(solution)
         number_of_guesses += 1
         discarded_letters.update(analyse_guess(guess, solution))
@@ -26,8 +26,13 @@ def main():
         for element in discarded_letters:
             print(element, end=", ")
         print()
-
         print("Guesses left: " + str(6 - number_of_guesses))
+
+    if number_of_guesses < 6:
+        print("You won!")
+    else:
+        print("You lost!")
+        print("The solution was: " + solution)
 
 
 def get_random_solution(dune_mode):
