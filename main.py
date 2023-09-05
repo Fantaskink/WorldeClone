@@ -9,10 +9,23 @@ __license__ = "MIT"
 
 
 def main():
+    discarded_letters = set()
     solution = get_random_solution()
     print(solution)
-    guess = prompt_player_word()
-    analyse_guess(guess, solution)
+
+    guess = ""
+    number_of_guesses = 0
+
+    while guess != solution:
+        guess = prompt_player_word()
+        number_of_guesses += 1
+        discarded_letters.update(analyse_guess(guess, solution))
+        print("Discarded letters: ")
+        for element in discarded_letters:
+            print(element, end=", ")
+        print()
+
+        print("Guesses left: " + str(6 - number_of_guesses))
 
 
 def get_random_solution():
@@ -35,15 +48,24 @@ def prompt_player_word():
 
 def analyse_guess(guess, solution):
     output = ""
+    letters = []
+    discarded_letters = set()
+    for i in range(0, 5):
+        letters.append(guess[i])
+
     for i in range(0,5):
         if guess[i] == solution[i]:
             output += "🟩"
-        elif guess[i] in solution:
+        elif guess[i] in solution and guess[i] in letters:
             output += "🟨"
+            letters.remove(guess[i])
         else:
             output += "⬜"
+            discarded_letters.add(guess[i])
 
     print(output)
+
+    return discarded_letters
 
 
 if __name__ == "__main__":
