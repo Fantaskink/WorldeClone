@@ -13,13 +13,13 @@ def main():
 
     discarded_letters = set()
     solution = get_random_solution(dune_mode)
-    #print(solution)
+    print(solution)
 
     guess = ""
     number_of_guesses = 0
 
     while guess != solution and number_of_guesses < 6:
-        guess = prompt_player_word(solution)
+        guess = prompt_player_word(solution, dune_mode)
         number_of_guesses += 1
         discarded_letters.update(analyse_guess(guess, solution))
         print("Discarded letters: ")
@@ -48,37 +48,59 @@ def get_random_solution(dune_mode):
         return random.choice(valid_solutions)
 
 
-def prompt_player_word(solution):
+def get_valid_guesses():
+    with open('words/valid_guesses.csv', 'r') as f:
+        valid_guesses = f.read().splitlines()
+        return valid_guesses
+
+
+def prompt_player_word(solution, dune_mode):
     solution_length = len(solution)
     player_input = input("Enter a word with " + str(solution_length) + " letters: ")
 
     if not player_input.isalpha() or len(player_input) != solution_length:
         print("Invalid input.")
-        return prompt_player_word(solution)
+        return prompt_player_word(solution, dune_mode)
+
+    if not dune_mode:
+        valid_guesses = get_valid_guesses()
+
+        is_valid_guess = False
+
+        for guess in valid_guesses:
+            if player_input == guess:
+                is_valid_guess = True
+
+        if not is_valid_guess:
+            print("Not a word")
+            return prompt_player_word(solution, dune_mode)
 
     return player_input
 
 
 def analyse_guess(guess, solution):
     solution_length = len(solution)
-    output = ""
+    output = list("_____")
     letters = []
     discarded_letters = set()
     for i in range(0, solution_length):
         letters.append(guess[i])
 
     for i in range(0, solution_length):
-        if guess[i] == solution[i]:
-            output += "🟩"
+        if guess[i] in solution and guess[i] in letters and guess[i] != solution[i]:
+            output[i] = "🟨"
             letters.remove(guess[i])
-        elif guess[i] in solution and guess[i] in letters:
-            output += "🟨"
+        elif guess[i] == solution[i]:
+            output[i] = "🟩"
             letters.remove(guess[i])
         else:
-            output += "⬜"
+            output[i] = "⬜"
             discarded_letters.add(guess[i])
 
-    print(output)
+    output_string = ""
+    for letter in output:
+        output_string += letter
+    print(output_string)
 
     return discarded_letters
 
