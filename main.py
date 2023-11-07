@@ -23,6 +23,7 @@ def main():
         number_of_guesses += 1
         discarded_letters.update(analyse_guess(guess, solution))
         print("Discarded letters: ")
+
         for element in discarded_letters:
             print(element, end=", ")
         print()
@@ -54,6 +55,12 @@ def get_valid_guesses():
         return valid_guesses
 
 
+def get_solutions():
+    with open('words/valid_solutions.csv', 'r') as f:
+        valid_solutions = f.read().splitlines()
+        return valid_solutions
+
+
 def prompt_player_word(solution, dune_mode):
     solution_length = len(solution)
     player_input = input("Enter a word with " + str(solution_length) + " letters: ")
@@ -64,12 +71,12 @@ def prompt_player_word(solution, dune_mode):
 
     if not dune_mode:
         valid_guesses = get_valid_guesses()
+        valid_solutions = get_solutions()
 
         is_valid_guess = False
 
-        for guess in valid_guesses:
-            if player_input == guess:
-                is_valid_guess = True
+        if player_input in valid_guesses or player_input in valid_solutions:
+            is_valid_guess = True
 
         if not is_valid_guess:
             print("Not a word")
@@ -80,11 +87,11 @@ def prompt_player_word(solution, dune_mode):
 
 def analyse_guess(guess, solution):
     solution_length = len(solution)
-    output = list("_____")
+    output = ["_" for _ in range(solution_length)]
     letters = []
     discarded_letters = set()
     for i in range(0, solution_length):
-        letters.append(guess[i])
+        letters.append(solution[i])
 
     for i in range(0, solution_length):
         if guess[i] in solution and guess[i] in letters and guess[i] != solution[i]:
