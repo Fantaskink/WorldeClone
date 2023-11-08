@@ -102,7 +102,8 @@ def analyse_guess(guess, solution):
             letters.remove(guess[i])
         else:
             output[i] = "⬜"
-            discarded_letters.add(guess[i])
+            if guess not in solution:
+                discarded_letters.add(guess[i])
 
     output_string = ""
     for letter in output:
